@@ -52,7 +52,7 @@ fun MovieCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column() {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(text = movieModel.title, style = MaterialTheme.typography.titleMedium)
                 Text(
                     text = "Рейтинг: ${movieModel.rating}",
