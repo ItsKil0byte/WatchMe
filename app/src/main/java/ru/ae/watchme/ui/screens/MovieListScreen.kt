@@ -59,7 +59,7 @@ fun MovieListScreen(
             contentPadding = PaddingValues(8.dp)
         ) {
             items(movies) {
-                MovieCard(movieModel = it)
+                MovieCard(movieModel = it, onClick = { onMovieClick(it.id) })
             }
         }
     }
