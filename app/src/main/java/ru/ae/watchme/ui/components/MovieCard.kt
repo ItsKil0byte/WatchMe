@@ -27,9 +27,11 @@ import ru.ae.watchme.R
 
 @Composable
 fun MovieCard(
-    movieModel: MovieModel
+    movieModel: MovieModel,
+    onClick: () -> Unit
 ) {
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
@@ -59,7 +61,7 @@ fun MovieCard(
                 Spacer(modifier = Modifier.height(80.dp))
                 SuggestionChip(
                     modifier = Modifier.align(Alignment.End),
-                    onClick = {},
+                    onClick = { /* TODO: Закешировать */ },
                     label = { Text(text = "Хочу посмотреть") }
                 )
             }
@@ -76,7 +78,8 @@ fun MovieCardPreview() {
             title = "Гарри Поттер и что-то там",
             image = "...",
             rating = 5.0
-        )
+        ),
+        onClick = {}
     )
 }
 
