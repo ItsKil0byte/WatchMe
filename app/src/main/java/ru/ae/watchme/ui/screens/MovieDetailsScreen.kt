@@ -9,8 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun MovieDetailsScreen(id: Int, onBackClick: () -> Unit) {
     Column() {
-        Text("Автостопом по галактике. ID $id")
-        Text("Лучше прочитайте книгу")
+        Text("Фильм. ID $id")
         Button(onClick = onBackClick) { Text("Вернуться назад") }
     }
 }
