@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import ru.ae.watchme.ui.screens.MovieDetailsScreen
 import ru.ae.watchme.ui.screens.MovieListScreen
 import ru.ae.watchme.ui.screens.RandomWheelScreen
@@ -31,9 +32,9 @@ fun Navigation() {
             RandomWheelScreen(onBackClick = { navController.popBackStack() })
         }
 
-        composable<Screen.MovieDetails> {
-            // TODO: Получать ID с элемента.
-            MovieDetailsScreen(id = 42, onBackClick = { navController.popBackStack() })
+        composable<Screen.MovieDetails> { backStackEntity ->
+            val id: Int = backStackEntity.toRoute<Screen.MovieDetails>().id
+            MovieDetailsScreen(id = id, onBackClick = { navController.popBackStack() })
         }
     }
 }
