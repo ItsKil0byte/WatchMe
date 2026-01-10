@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.ae.watchme.ui.screens.MovieListScreen
+import ru.ae.watchme.ui.screens.RandomWheelScreen
 
 @Composable
 fun Navigation() {
@@ -29,8 +30,7 @@ fun Navigation() {
         }
 
         composable<Screen.RandomWheel> {
-            // TODO
-            Text("Колесо рандома (WIP)")
+            RandomWheelScreen(onBackClick = { navController.popBackStack() })
         }
 
         composable<Screen.MovieDetails> {
