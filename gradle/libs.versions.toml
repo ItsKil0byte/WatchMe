@@ -16,6 +16,7 @@ room = "2.8.0"
 koin = "4.1.0"
 coil = "2.7.0"
 ksp = "2.2.0-2.0.2"
+serialization = "1.9.0"
 
 [libraries]
 # Android Core
@@ -56,6 +57,9 @@ koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", versi
 # Images
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
+# Serializible stuff
+serialization = {group="org.jetbrains.kotlinx", name="kotlinx-serialization-json", version.ref="serialization"}
+
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -69,3 +73,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
+# Serializible stuff
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
