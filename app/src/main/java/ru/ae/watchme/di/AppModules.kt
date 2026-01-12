@@ -6,23 +6,40 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import ru.ae.watchme.BuildConfig
+import ru.ae.watchme.data.remote.interceptor.ApiKeyInterceptor
+import ru.ae.watchme.data.remote.service.MovieService
+import ru.ae.watchme.data.repository.MovieRepositoryImpl
+import ru.ae.watchme.domain.repository.MovieRepository
 
 val networkModule = module {
+    single { BuildConfig.API_KEY }
+
+    single {
+        OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+            .addInterceptor(ApiKeyInterceptor(get()))
+            .build()
+    }
+
     single {
         Retrofit.Builder()
-            .baseUrl("TODO") // TODO: Вставить URL от API
+            .baseUrl("https://api.poiskkino.dev/v1.4/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(get())
             .build()
     }
-    single {
-        OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
-            .build()
-    }
 
-    // TODO: Передать класс сервиса
-    // single { get<Retrofit>().create(TODO()) }
+    single { get<Retrofit>().create(MovieService::class.java) }
+}
+
+val repositoryModule = module {
+    single<MovieRepository>{
+        MovieRepositoryImpl(
+            get()
+        )
+    }
 }
 
 val databaseModule = module {
@@ -32,5 +49,9 @@ val databaseModule = module {
 }
 
 val appModule = module {
-    // TODO: Передать репозитории и view модели
+    //TODO() Передать остальные модули, бд и че там еще появится
+    includes(
+        networkModule,
+        repositoryModule
+    )
 }

@@ -1,9 +1,17 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+}
+
+fun getApiKey(): String{
+    val props = Properties()
+    props.load(file("../local.properties").inputStream())
+    return props.getProperty("API_KEY")
 }
 
 android {
@@ -20,6 +28,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_KEY", "\"${getApiKey()}\"")
     }
 
     buildTypes {
@@ -40,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
