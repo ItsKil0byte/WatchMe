@@ -50,12 +50,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.ae.watchme.ui.components.BigMovieCard
-import ru.ae.watchme.ui.components.MovieCard
 import ru.ae.watchme.ui.components.MovieModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RandomWheelScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
+fun RandomMovieScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
 
     // Анимация вышла посредственной, но пока что так.
 
@@ -85,7 +84,7 @@ fun RandomWheelScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Колесо рандома!") },
+                title = { Text("Что смотрим сегодня?") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -165,9 +164,9 @@ fun RandomWheelScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
                 if (isShuffling) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp))
                     Spacer(Modifier.width(12.dp))
-                    Text("Тасуем...")
+                    Text("Выбираем фильм...")
                 } else {
-                    Text("Выбрать случайный фильм")
+                    Text("Удиви меня!")
                 }
             }
         }
@@ -176,6 +175,6 @@ fun RandomWheelScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
 
 @Preview
 @Composable
-fun RandomWheelScreenPreview() {
-    RandomWheelScreen(onBackClick = {}, onMovieClick = {})
+fun RandomMovieScreenPreview() {
+    RandomMovieScreen(onBackClick = {}, onMovieClick = {})
 }
