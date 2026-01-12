@@ -49,12 +49,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.ae.watchme.ui.components.BigMovieCard
 import ru.ae.watchme.ui.components.MovieCard
 import ru.ae.watchme.ui.components.MovieModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RandomWheelScreen(onBackClick: () -> Unit) {
+fun RandomWheelScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
 
     // Анимация вышла посредственной, но пока что так.
 
@@ -138,7 +139,7 @@ fun RandomWheelScreen(onBackClick: () -> Unit) {
                             }
                         }
                     } else {
-                        MovieCard(movieModel = movie, onClick = {})
+                        BigMovieCard(movieModel = movie, onClick = {onMovieClick(movie.id)})
                     }
                 }
             }
@@ -176,5 +177,5 @@ fun RandomWheelScreen(onBackClick: () -> Unit) {
 @Preview
 @Composable
 fun RandomWheelScreenPreview() {
-    RandomWheelScreen(onBackClick = {})
+    RandomWheelScreen(onBackClick = {}, onMovieClick = {})
 }
