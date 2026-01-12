@@ -35,9 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.ae.watchme.R
 import ru.ae.watchme.ui.components.MovieCard
 import ru.ae.watchme.ui.components.MovieModel
 
@@ -68,7 +70,7 @@ fun MovieListScreen(
                 actions = {
                     IconButton(onClick = onRandomWheelClick) {
                         Icon(
-                            imageVector = Icons.Default.Refresh,
+                            painter = painterResource(R.drawable.casino_24),
                             contentDescription = "Открыть колесо рандома"
                         )
                     }
