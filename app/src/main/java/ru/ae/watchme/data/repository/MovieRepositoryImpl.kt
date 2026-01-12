@@ -16,4 +16,13 @@ class MovieRepositoryImpl (
             throw RuntimeException("Чето не так с получением киношек", e)
         }
     }
+
+    override suspend fun getRandomMovie(): Movie {
+        return try{
+            val response = movieService.getRandomMovie()
+            response.toDomain()
+        } catch (e: Exception){
+            throw RuntimeException("Чето не так с получением случайной киношки", e)
+        }
+    }
 }

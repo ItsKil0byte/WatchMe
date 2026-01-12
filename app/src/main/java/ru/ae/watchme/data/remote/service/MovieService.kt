@@ -14,4 +14,9 @@ interface MovieService {
         @Query("selectFields") fields: List<String> = Constants.selectFields,
         @Query("notNullFields") notNullFields: List<String> = Constants.notNullFields
     ): MovieResponseDto
+
+    @GET("movie/random")
+    suspend fun getRandomMovie(
+        @Query("notNullFields") notNullFields: List<String> = Constants.notNullFields
+    ): MovieDto
 }
