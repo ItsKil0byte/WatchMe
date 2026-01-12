@@ -29,7 +29,11 @@ fun Navigation() {
         }
 
         composable<Screen.RandomWheel> {
-            RandomWheelScreen(onBackClick = { navController.popBackStack() })
+            RandomWheelScreen(
+                onBackClick = { navController.popBackStack() },
+                onMovieClick = { id ->
+                    navController.navigate(Screen.MovieDetails(id))
+                })
         }
 
         composable<Screen.MovieDetails> { backStackEntity ->
