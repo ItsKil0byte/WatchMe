@@ -15,6 +15,7 @@ import ru.ae.watchme.data.repository.MovieRepositoryImpl
 import ru.ae.watchme.domain.repository.MovieRepository
 import ru.ae.watchme.ui.viewmodels.MovieDetailsViewModel
 import ru.ae.watchme.ui.viewmodels.MovieListViewModel
+import ru.ae.watchme.ui.viewmodels.RandomMovieViewModel
 
 val networkModule = module {
     single { BuildConfig.API_KEY }
@@ -49,6 +50,7 @@ val repositoryModule = module {
 
 val viewModelModule = module {
     viewModel { MovieListViewModel(get()) }
+    viewModel { RandomMovieViewModel(get()) }
     viewModel { (id: Int) ->
         MovieDetailsViewModel(id, get())
     } // Синтаксис котла поражает воображение

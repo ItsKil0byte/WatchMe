@@ -1,7 +1,5 @@
 package ru.ae.watchme.ui.screens
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -23,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
@@ -39,58 +36,42 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.ae.watchme.domain.model.Movie
+import org.koin.androidx.compose.koinViewModel
 import ru.ae.watchme.ui.components.BigMovieCard
+import ru.ae.watchme.ui.viewmodels.RandomMovieState
+import ru.ae.watchme.ui.viewmodels.RandomMovieViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun RandomMovieScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
-
-    // Анимация вышла посредственной, но пока что так.
-
-    var isShuffling by remember { mutableStateOf(false) }
-    var result by remember { mutableStateOf<Movie?>(null) }
-
+@OptIn(ExperimentalMaterial3Api::class)
+fun RandomMovieContent(
+    state: RandomMovieState,
+    onBackClick: () -> Unit,
+    onMovieClick: (Int) -> Unit,
+    onShuffleClick: () -> Unit
+) {
     val transition = rememberInfiniteTransition()
     val offset by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = if (isShuffling) 15f else 0f,
+        initialValue = -10f,
+        targetValue = 10f,
         animationSpec = infiniteRepeatable(
             animation = tween(50, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         )
     )
 
-    // Список заглушка
-    val movies = List(10) { i ->
-        Movie(
-            i,
-            "Название фильма $i",
-            "Описание фильма $i",
-            "Короткое описание фильма $i",
-            i,
-            listOf("Жанр 1", "Жанр 2"),
-            posterUrl = "https://placecats.com/200/300",
-            previewUrl = "https://placecats.com/125/175",
-            rating = 6.7,
-            ageRating = i,
-        )
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Что смотрим сегодня?") },
+                title = { Text("Что позырим?") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -109,70 +90,91 @@ fun RandomMovieScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp),
+                    .height(450.dp),
                 contentAlignment = Alignment.Center
             ) {
                 // Фейковые карточки
-                repeat(3) { index ->
+                repeat(5) { index ->
                     Card(
                         modifier = Modifier
-                            .size(200.dp, 300.dp)
+                            .size(250.dp, 390.dp)
                             .graphicsLayer {
-                                rotationZ = (index - 1) * 5f
-                                translationX = if (isShuffling) offset * (index + 1) else 0f
+                                rotationZ = (index - 0.5f) * 4f
+                                translationX =
+                                    if (state is RandomMovieState.Shuffling) offset * (index + 1) else 0f
                             },
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
                         elevation = CardDefaults.cardElevation(defaultElevation = (index * 2).dp)
                     ) {}
                 }
 
                 AnimatedContent(
-                    targetState = result,
-                    transitionSpec = { (fadeIn() + scaleIn()).togetherWith(fadeOut() + scaleOut()) }
-                ) { movie ->
-                    if (movie == null) {
-                        Card(
-                            modifier = Modifier.size(220.dp, 320.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Icon(
-                                    Icons.Default.PlayArrow,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(80.dp),
-                                    tint = Color.White
-                                )
+                    targetState = state,
+                    transitionSpec = {
+                        (fadeIn(animationSpec = tween(400)) + scaleIn(initialScale = 0.8f))
+                            .togetherWith(fadeOut(animationSpec = tween(200)) + scaleOut())
+                    }
+                ) { currentState ->
+                    when (currentState) {
+                        is RandomMovieState.Idle, is RandomMovieState.Shuffling -> {
+                            Card(
+                                modifier = Modifier.size(240.dp, 380.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                            ) {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Icon(
+                                            Icons.Default.PlayArrow,
+                                            null,
+                                            Modifier.size(100.dp),
+                                            tint = Color.White
+                                        )
+                                        Spacer(Modifier.height(16.dp))
+                                        Text(
+                                            text = if (currentState is RandomMovieState.Shuffling) "Выбираем..." else "Удиви меня!",
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.titleMedium
+                                        )
+                                    }
+                                }
                             }
                         }
-                    } else {
-                        BigMovieCard(movie = movie, onClick = {onMovieClick(movie.id)})
+
+                        is RandomMovieState.Success -> {
+                            BigMovieCard(
+                                movie = currentState.movie,
+                                onClick = { onMovieClick(currentState.movie.id) }
+                            )
+                        }
+
+                        is RandomMovieState.Empty -> {
+                            Text(
+                                "Ничего не нашли :(",
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                        }
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(Modifier.height(52.dp))
 
             Button(
-                onClick = {
-                    isShuffling = true
-                    result = null
-
-                    // Имитируем задержку, в реальности будем делать запросик к кэшу
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        isShuffling = false
-                        result = movies.random()
-                    }, 1500)
-                },
-                enabled = !isShuffling,
+                onClick = onShuffleClick,
+                enabled = state !is RandomMovieState.Shuffling,
                 modifier = Modifier
-                    .height(56.dp)
-                    .padding(horizontal = 32.dp)
+                    .height(52.dp)
+                    .fillMaxWidth(0.5f)
             ) {
-                if (isShuffling) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                    Spacer(Modifier.width(12.dp))
-                    Text("Выбираем фильм...")
+                if (state is RandomMovieState.Shuffling) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        strokeWidth = 2.dp
+                    )
                 } else {
-                    Text("Удиви меня!")
+                    Text("Выбрать фильм")
                 }
             }
         }
@@ -182,5 +184,26 @@ fun RandomMovieScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
 @Preview
 @Composable
 fun RandomMovieScreenPreview() {
-    RandomMovieScreen(onBackClick = {}, onMovieClick = {})
+    RandomMovieContent(
+        state = RandomMovieState.Idle,
+        onBackClick = {},
+        onMovieClick = {},
+        onShuffleClick = {}
+    )
+}
+
+@Composable
+fun RandomMovieScreen(
+    onBackClick: () -> Unit,
+    onMovieClick: (Int) -> Unit,
+    viewModel: RandomMovieViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsState()
+
+    RandomMovieContent(
+        state = state,
+        onBackClick = onBackClick,
+        onMovieClick = onMovieClick,
+        onShuffleClick = { viewModel.pick() }
+    )
 }
