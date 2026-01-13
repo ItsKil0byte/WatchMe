@@ -1,5 +1,6 @@
 package ru.ae.watchme.ui.screens
 
+import android.graphics.pdf.models.ListItem
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,8 +57,8 @@ fun MovieListScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
+    val query by viewModel.query.collectAsState()
 
-    var searchQuery by remember { mutableStateOf("") }
     var isActive by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -112,16 +113,16 @@ fun MovieListScreen(
                 shadowElevation = 4.dp,
                 inputField = {
                     SearchBarDefaults.InputField(
-                        query = searchQuery,
-                        onQueryChange = { searchQuery = it },
+                        query = query,
+                        onQueryChange = { viewModel.search(it) },
                         onSearch = { isActive = false },
                         expanded = isActive,
                         onExpandedChange = { isActive = it },
                         placeholder = { Text("Найти фильмы...") },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         trailingIcon = {
-                            if (searchQuery.isNotEmpty()) {
-                                IconButton(onClick = { searchQuery = "" }) {
+                            if (query.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.search("") }) {
                                     Icon(Icons.Default.Clear, contentDescription = null)
                                 }
                             }
@@ -135,7 +136,22 @@ fun MovieListScreen(
                     .fillMaxWidth(0.9f)
                     .padding(top = 8.dp)
             ) {
-                // Временно убрал, перенесу во viewModel.
+                if (state is MovieListState.Success) {
+                    val suggestion = (state as MovieListState.Success).movies.take(5)
+
+                    suggestion.forEach {
+                        ListItem(
+                            headlineContent = { Text(it.name) },
+                            modifier = Modifier.clickable {
+                                viewModel.search(it.name)
+                                isActive = false
+                            },
+                            colors = ListItemDefaults.colors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                    }
+                }
             }
 
         }
