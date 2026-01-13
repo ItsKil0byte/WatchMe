@@ -3,6 +3,7 @@ package ru.ae.watchme.di
 import androidx.room.Room
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -12,6 +13,7 @@ import ru.ae.watchme.data.remote.interceptor.ApiKeyInterceptor
 import ru.ae.watchme.data.remote.service.MovieService
 import ru.ae.watchme.data.repository.MovieRepositoryImpl
 import ru.ae.watchme.domain.repository.MovieRepository
+import ru.ae.watchme.ui.viewmodels.MovieListViewModel
 
 val networkModule = module {
     single { BuildConfig.API_KEY }
@@ -42,6 +44,10 @@ val repositoryModule = module {
     }
 }
 
+val viewModelModule = module {
+    viewModel { MovieListViewModel(get()) }
+}
+
 val databaseModule = module {
     // TODO: Передать класс для базы данных
     // single { Room.databaseBuilder(get(), TODO(), "WatchMeLocal.db").build() }
@@ -52,6 +58,7 @@ val appModule = module {
     //TODO() Передать остальные модули, бд и че там еще появится
     includes(
         networkModule,
-        repositoryModule
+        repositoryModule,
+        viewModelModule
     )
 }

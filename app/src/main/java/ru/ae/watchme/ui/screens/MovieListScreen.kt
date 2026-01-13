@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,26 +41,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 import ru.ae.watchme.R
 import ru.ae.watchme.ui.components.MovieCard
 import ru.ae.watchme.ui.components.MovieModel
+import ru.ae.watchme.ui.viewmodels.MovieListState
+import ru.ae.watchme.ui.viewmodels.MovieListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieListScreen(
     onMovieClick: (Int) -> Unit,
-    onRandomWheelClick: () -> Unit
+    onRandomWheelClick: () -> Unit,
+    viewModel: MovieListViewModel = koinViewModel()
 ) {
 
-    // Список заглушка
-    val movies = List(10) { i ->
-        MovieModel(
-            id = i,
-            title = "Фильм",
-            image = "https://placecats.com/125/175",
-            rating = i.toDouble()
-        )
-    }
+    val state by viewModel.state.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
     var isActive by remember { mutableStateOf(false) }
@@ -79,17 +77,31 @@ fun MovieListScreen(
         }
     ) { innerPadding ->
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
-            val filteredMovies = movies.filter { it.title.contains(searchQuery, ignoreCase = true) }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(top = 80.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
-            ) {
-                items(filteredMovies) {
-                    MovieCard(movieModel = it, onClick = { onMovieClick(it.id) })
+            when (val currentState = state) {
+                is MovieListState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
+                is MovieListState.Error -> {
+                    Text(text = currentState.message, modifier = Modifier.align(Alignment.Center))
+                }
+
+                is MovieListState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(top = 80.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
+                    ) {
+                        items(currentState.movies) {
+                            // TODO: Обновить MovieCard
+                            Text(text = "$it")
+                        }
+                    }
                 }
             }
 
@@ -114,26 +126,13 @@ fun MovieListScreen(
                     )
                 },
                 expanded = isActive,
-                onExpandedChange = {isActive = it},
-                modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(0.9f).padding(top = 8.dp)
+                onExpandedChange = { isActive = it },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth(0.9f)
+                    .padding(top = 8.dp)
             ) {
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    val suggestions = filteredMovies.take(3)
-
-                    items(suggestions) {
-                        ListItem(
-                            headlineContent = {Text(it.title)},
-                            leadingContent = {Icon(Icons.Default.Info, contentDescription = null)},
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent
-                            ),
-                            modifier = Modifier.clickable {
-                                searchQuery = it.title
-                                isActive = false
-                            }
-                        )
-                    }
-                }
+                // Временно убрал, перенесу во viewModel.
             }
 
         }
