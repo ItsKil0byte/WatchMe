@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -18,7 +17,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -33,9 +31,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,23 +43,18 @@ import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.ae.watchme.R
+import ru.ae.watchme.domain.model.Movie
 import ru.ae.watchme.ui.viewmodels.MovieDetailsState
 import ru.ae.watchme.ui.viewmodels.MovieDetailsViewModel
-import ru.ae.watchme.ui.viewmodels.MovieListState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailsScreen(
-    id: Int,
+@OptIn(ExperimentalMaterial3Api::class)
+fun MovieDetailsContent(
+    state: MovieDetailsState,
     onBackClick: () -> Unit,
-    viewModel: MovieDetailsViewModel = koinViewModel(parameters = {
-        parametersOf(id)
-    })
+    onFavoriteClick: () -> Unit
 ) {
-
-    val state by viewModel.state.collectAsState()
-
-    when (val currentState = state) {
+    when (state) {
         is MovieDetailsState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
@@ -73,12 +63,12 @@ fun MovieDetailsScreen(
 
         is MovieDetailsState.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = currentState.message)
+                Text(text = state.message)
             }
         }
 
         is MovieDetailsState.Success -> {
-            val movie = currentState.movie
+            val movie = state.movie
 
             Scaffold(
                 topBar = {
@@ -96,23 +86,23 @@ fun MovieDetailsScreen(
                 },
                 floatingActionButton = {
                     ExtendedFloatingActionButton(
-                        onClick = { viewModel.toggleFavourite() },
+                        onClick = { onFavoriteClick() },
                         icon = {
                             Icon(
-                                if (currentState.isFavourite) {
+                                if (state.isFavourite) {
                                     Icons.Filled.Favorite
                                 } else {
                                     Icons.Filled.FavoriteBorder
                                 },
                                 contentDescription = null,
-                                tint = if (currentState.isFavourite) {
+                                tint = if (state.isFavourite) {
                                     Color.Red
                                 } else {
                                     Color.White
                                 }
                             )
                         },
-                        text = { Text(if (currentState.isFavourite) "В избранном" else "В избранное") }
+                        text = { Text(if (state.isFavourite) "В избранном" else "В избранное") }
                     )
                 }
             ) { innerPadding ->
@@ -209,5 +199,37 @@ fun MovieDetailsScreen(
 @Preview
 @Composable
 fun MovieDetailsScreenPreview() {
-    MovieDetailsScreen(id = 42, onBackClick = {})
+    val previewMovie = Movie(
+        id = 6,
+        name = "Форрест Гамп",
+        description = "От лица главного героя Форреста Гампа, слабоумного безобидного человека с благородным и открытым сердцем, рассказывается история его необыкновенной жизни.",
+        shortDescription = "История жизни простого человека с большим сердцем",
+        year = 1994,
+        genres = listOf("Драма", "Комедия", "Мелодрама"),
+        posterUrl = "...",
+        previewUrl = "...",
+        rating = 8.8,
+        ageRating = 16
+    )
+
+    MovieDetailsContent(
+        state = MovieDetailsState.Success(movie = previewMovie, isFavourite = true),
+        onBackClick = {},
+        onFavoriteClick = {}
+    )
+}
+
+@Composable
+fun MovieDetailsScreen(
+    id: Int,
+    onBackClick: () -> Unit,
+    viewModel: MovieDetailsViewModel = koinViewModel(parameters = { parametersOf(id) })
+) {
+    val state by viewModel.state.collectAsState()
+
+    MovieDetailsContent(
+        state = state,
+        onBackClick = onBackClick,
+        onFavoriteClick = { viewModel.toggleFavourite() }
+    )
 }
