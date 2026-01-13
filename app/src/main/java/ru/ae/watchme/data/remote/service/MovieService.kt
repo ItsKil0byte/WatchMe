@@ -27,4 +27,10 @@ interface MovieService {
         @Query("limit") limit: Int = 20,
         @Query("query") query: String
     ): MovieResponseDto
+
+    @GET("movie/{id}")
+    suspend fun getMovieDetails(
+        @Path("id") movieId: Int
+    ): MovieDto
+
 }

@@ -37,4 +37,13 @@ class MovieRepositoryImpl (
             throw RuntimeException("Чето не так с поиском киношки", e)
         }
     }
+
+    override suspend fun getMovieDetails(movieId: Int): Movie {
+        return try {
+            val response = movieService.getMovieDetails(movieId)
+            response.toDomain()
+        } catch (e: Exception) {
+            throw RuntimeException("Чето не так с получением фильма по айди, поплачь хз", e)
+        }
+    }
 }
