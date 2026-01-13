@@ -4,14 +4,14 @@ import ru.ae.watchme.domain.model.Movie
 
 data class MovieDto(
     val id: Int,
-    val name: String,
-    val description: String,
-    val shortDescription: String,
-    val year: Int,
-    val genres: List<GenreDto>,
-    val poster: PosterDto,
-    val rating: RatingDto,
-    val ageRating: Int
+    val name: String?,
+    val description: String?,
+    val shortDescription: String?,
+    val year: Int?,
+    val genres: List<GenreDto>?,
+    val poster: PosterDto?,
+    val rating: RatingDto?,
+    val ageRating: Int?
 )
 
 fun MovieDto.toDomain(): Movie{
@@ -21,10 +21,10 @@ fun MovieDto.toDomain(): Movie{
         description = description,
         shortDescription = shortDescription,
         year = year,
-        genres = genres.map { it.genreToString() },
-        posterUrl = poster.url,
-        previewUrl = poster.previewUrl,
-        rating = rating.kp,
+        genres = genres?.map { it.genreToString() },
+        posterUrl = poster?.url,
+        previewUrl = poster?.previewUrl,
+        rating = rating?.kp,
         ageRating = ageRating
     )
 }

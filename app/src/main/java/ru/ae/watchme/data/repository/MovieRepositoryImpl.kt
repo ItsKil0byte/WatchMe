@@ -25,4 +25,16 @@ class MovieRepositoryImpl (
             throw RuntimeException("Чето не так с получением случайной киношки", e)
         }
     }
+
+    override suspend fun searchMovie(
+        pageNum: Int,
+        query: String
+    ): List<Movie> {
+        return try {
+            val response = movieService.searchMovie(pageNum = pageNum, query = query)
+            response.movies.map { it.toDomain() }
+        } catch (e: Exception){
+            throw RuntimeException("Чето не так с поиском киношки", e)
+        }
+    }
 }
