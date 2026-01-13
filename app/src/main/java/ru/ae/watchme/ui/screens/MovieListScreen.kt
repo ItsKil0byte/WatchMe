@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import ru.ae.watchme.R
 import ru.ae.watchme.ui.components.MovieCard
-import ru.ae.watchme.ui.components.MovieModel
 import ru.ae.watchme.ui.viewmodels.MovieListState
 import ru.ae.watchme.ui.viewmodels.MovieListViewModel
 
@@ -95,11 +94,15 @@ fun MovieListScreen(
                 is MovieListState.Success -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(top = 80.dp, bottom = 8.dp, start = 8.dp, end = 8.dp)
+                        contentPadding = PaddingValues(
+                            top = 80.dp,
+                            bottom = 8.dp,
+                            start = 8.dp,
+                            end = 8.dp
+                        )
                     ) {
                         items(currentState.movies) {
-                            // TODO: Обновить MovieCard
-                            Text(text = "$it")
+                            MovieCard(movie = it, onClick = { onMovieClick(it.id) })
                         }
                     }
                 }

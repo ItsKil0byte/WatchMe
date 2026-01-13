@@ -49,8 +49,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.ae.watchme.domain.model.Movie
 import ru.ae.watchme.ui.components.BigMovieCard
-import ru.ae.watchme.ui.components.MovieModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +59,7 @@ fun RandomMovieScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
     // Анимация вышла посредственной, но пока что так.
 
     var isShuffling by remember { mutableStateOf(false) }
-    var result by remember { mutableStateOf<MovieModel?>(null) }
+    var result by remember { mutableStateOf<Movie?>(null) }
 
     val transition = rememberInfiniteTransition()
     val offset by transition.animateFloat(
@@ -73,11 +73,17 @@ fun RandomMovieScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
 
     // Список заглушка
     val movies = List(10) { i ->
-        MovieModel(
-            id = i,
-            title = "Фильм",
-            image = "https://placecats.com/125/175",
-            rating = i.toDouble()
+        Movie(
+            i,
+            "Название фильма $i",
+            "Описание фильма $i",
+            "Короткое описание фильма $i",
+            i,
+            listOf("Жанр 1", "Жанр 2"),
+            posterUrl = "https://placecats.com/200/300",
+            previewUrl = "https://placecats.com/125/175",
+            rating = 6.7,
+            ageRating = i,
         )
     }
 
@@ -138,7 +144,7 @@ fun RandomMovieScreen(onMovieClick: (Int) -> (Unit), onBackClick: () -> Unit) {
                             }
                         }
                     } else {
-                        BigMovieCard(movieModel = movie, onClick = {onMovieClick(movie.id)})
+                        BigMovieCard(movie = movie, onClick = {onMovieClick(movie.id)})
                     }
                 }
             }

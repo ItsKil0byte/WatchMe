@@ -27,9 +27,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.ae.watchme.R
+import ru.ae.watchme.domain.model.Movie
 
 @Composable
-fun BigMovieCard(movieModel: MovieModel, onClick: () -> (Unit)) {
+fun BigMovieCard(movie: Movie, onClick: () -> (Unit)) {
     Card(
         modifier = Modifier
             .size(280.dp, 420.dp)
@@ -42,7 +43,7 @@ fun BigMovieCard(movieModel: MovieModel, onClick: () -> (Unit)) {
                 .fillMaxSize()
         ) {
             AsyncImage(
-                model = movieModel.image,
+                model = movie.posterUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
@@ -66,7 +67,7 @@ fun BigMovieCard(movieModel: MovieModel, onClick: () -> (Unit)) {
                     .padding(16.dp)
             ) {
                 Text(
-                    text = movieModel.title,
+                    text = movie.name,
                     style = MaterialTheme.typography.headlineSmall,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
@@ -78,7 +79,7 @@ fun BigMovieCard(movieModel: MovieModel, onClick: () -> (Unit)) {
                         tint = Color.Yellow
                     )
                     Text(
-                        text = " ${movieModel.rating}",
+                        text = " ${movie.rating}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White
                     )
@@ -92,11 +93,17 @@ fun BigMovieCard(movieModel: MovieModel, onClick: () -> (Unit)) {
 @Composable
 fun BigMovieCardPreview() {
     BigMovieCard(
-        movieModel = MovieModel(
-            id = 1,
-            title = "Гарри Поттер и что-то там",
-            image = "...",
-            rating = 5.0
+        movie = Movie(
+            1,
+            "Название фильма",
+            "Описание фильма",
+            "Короткое описание фильма",
+            2005,
+            listOf("Жанр 1", "Жанр 2"),
+            posterUrl = "...",
+            previewUrl = "...",
+            rating = 6.7,
+            ageRating = 18,
         ),
         onClick = {},
     )
