@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -21,7 +18,6 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,11 +32,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,6 +46,7 @@ import ru.ae.watchme.R
 import ru.ae.watchme.domain.model.Movie
 import ru.ae.watchme.ui.viewmodels.MovieDetailsState
 import ru.ae.watchme.ui.viewmodels.MovieDetailsViewModel
+import java.util.Locale
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +74,7 @@ fun MovieDetailsContent(
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { movie.name?.let { Text(it) } },
+                        title = { Text(movie.name) },
                         navigationIcon = {
                             IconButton(onClick = onBackClick) {
                                 Icon(
@@ -121,13 +117,11 @@ fun MovieDetailsContent(
                     )
 
                     Column(modifier = Modifier.padding(16.dp)) {
-                        movie.name?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                        Text(
+                            text = movie.name,
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Bold
+                        )
 
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -139,18 +133,18 @@ fun MovieDetailsContent(
                                 tint = Color.Yellow
                             )
                             Text(
-                                text = "${movie.rating}",
+                                text = movie.rating,
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
                             Text(text = "•", style = MaterialTheme.typography.bodyLarge)
 
-                            Text(text = "${movie.year}", style = MaterialTheme.typography.bodyLarge)
+                            Text(text = movie.year, style = MaterialTheme.typography.bodyLarge)
 
                             Text(text = "•", style = MaterialTheme.typography.bodyLarge)
 
                             Text(
-                                text = "${movie.ageRating}+",
+                                text = movie.ageRating,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
@@ -163,12 +157,10 @@ fun MovieDetailsContent(
                             fontWeight = FontWeight.Bold
                         )
 
-                        movie.description?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
+                        Text(
+                            text = movie.description,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -179,13 +171,14 @@ fun MovieDetailsContent(
                         )
 
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            movie.genres?.forEach {
+                            val genres = movie.genres.split(",").map {
+                                it.trim().replaceFirstChar(Char::titlecase)
+                            }
+
+                            genres.forEach {
                                 SuggestionChip(
-                                    label = { it?.let { text -> Text(text) } },
-                                    onClick = {
-                                        /* Можно в будущем добавить переход на поиск по жанру,
-                                        но пока что у нас нет ни времени ни ресурсов на это */
-                                    }
+                                    label = { Text(it) },
+                                    onClick = { }
                                 )
                             }
                         }
@@ -201,15 +194,15 @@ fun MovieDetailsContent(
 fun MovieDetailsScreenPreview() {
     val previewMovie = Movie(
         id = 6,
-        name = "Форрест Гамп",
-        description = "От лица главного героя Форреста Гампа, слабоумного безобидного человека с благородным и открытым сердцем, рассказывается история его необыкновенной жизни.",
-        shortDescription = "История жизни простого человека с большим сердцем",
-        year = 1994,
-        genres = listOf("Драма", "Комедия", "Мелодрама"),
-        posterUrl = "...",
-        previewUrl = "...",
-        rating = 8.8,
-        ageRating = 16
+        _name = "Форрест Гамп",
+        _description = "От лица главного героя Форреста Гампа, слабоумного безобидного человека с благородным и открытым сердцем, рассказывается история его необыкновенной жизни.",
+        _shortDescription = "История жизни простого человека с большим сердцем",
+        _year = 1994,
+        _genres = listOf("Драма", "Комедия", "Мелодрама"),
+        _posterUrl = "...",
+        _previewUrl = "...",
+        _rating = 8.8,
+        _ageRating = 16
     )
 
     MovieDetailsContent(

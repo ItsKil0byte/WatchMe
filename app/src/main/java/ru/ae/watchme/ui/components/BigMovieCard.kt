@@ -66,14 +66,12 @@ fun BigMovieCard(movie: Movie, onClick: () -> (Unit)) {
                     .align(Alignment.BottomStart)
                     .padding(16.dp)
             ) {
-                movie.name?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Text(
+                    text = movie.name,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Filled.Star,
@@ -102,10 +100,10 @@ fun BigMovieCardPreview() {
             "Короткое описание фильма",
             2005,
             listOf("Жанр 1", "Жанр 2"),
-            posterUrl = "...",
-            previewUrl = "...",
-            rating = 6.7,
-            ageRating = 18,
+            _posterUrl = null,
+            _previewUrl = "...",
+            _rating = 6.7,
+            _ageRating = 18,
         ),
         onClick = {},
     )

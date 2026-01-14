@@ -51,13 +51,11 @@ fun MovieCard(movie: Movie, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                movie.name?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
-                movie.shortDescription?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                Text(text = movie.name, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = movie.shortDescription,
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(modifier = Modifier.height(80.dp))
                 SuggestionChip(
                     modifier = Modifier.align(Alignment.End),
@@ -81,10 +79,10 @@ fun MovieCardPreview() {
             "Короткое описание фильма",
             2005,
             listOf("Жанр 1", "Жанр 2"),
-            posterUrl = "...",
-            previewUrl = "...",
-            rating = 6.7,
-            ageRating = 18,
+            _posterUrl = "...",
+            _previewUrl = "...",
+            _rating = 6.7,
+            _ageRating = 18,
         )
     )
 }
