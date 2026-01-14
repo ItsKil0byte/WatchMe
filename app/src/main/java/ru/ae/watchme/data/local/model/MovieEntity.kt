@@ -14,12 +14,12 @@ data class MovieEntity(
     val name: String?,
     val description: String?,
     val shortDescription: String?,
-    val year: Int?,
-    val genres: List<String?>?,
+    val year: String,
+    val genres: String,
     val posterUrl: String?,
     val previewUrl: String?,
-    val rating: Double?,
-    val ageRating: Int?
+    val rating: String,
+    val ageRating: String
 )
 
 fun MovieEntity.toMovie(): Movie {
