@@ -135,9 +135,9 @@ fun MovieListContent(
 
                     suggestion.forEach {
                         ListItem(
-                            headlineContent = { Text(it.name) },
+                            headlineContent = { it.name?.let { text -> Text(text) } },
                             modifier = Modifier.clickable {
-                                onSearch(it.name)
+                                it.name?.let { text -> onSearch(text) }
                                 isActive = false
                             },
                             colors = ListItemDefaults.colors(

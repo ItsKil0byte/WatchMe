@@ -78,7 +78,7 @@ fun MovieDetailsContent(
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text(movie.name) },
+                        title = { movie.name?.let { Text(it) } },
                         navigationIcon = {
                             IconButton(onClick = onBackClick) {
                                 Icon(
@@ -121,11 +121,13 @@ fun MovieDetailsContent(
                     )
 
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = movie.name,
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold
-                        )
+                        movie.name?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
 
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -161,10 +163,12 @@ fun MovieDetailsContent(
                             fontWeight = FontWeight.Bold
                         )
 
-                        Text(
-                            text = movie.description,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        movie.description?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -175,9 +179,9 @@ fun MovieDetailsContent(
                         )
 
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            movie.genres.forEach {
+                            movie.genres?.forEach {
                                 SuggestionChip(
-                                    label = { Text(it) },
+                                    label = { it?.let { text -> Text(text) } },
                                     onClick = {
                                         /* Можно в будущем добавить переход на поиск по жанру,
                                         но пока что у нас нет ни времени ни ресурсов на это */

@@ -66,12 +66,14 @@ fun BigMovieCard(movie: Movie, onClick: () -> (Unit)) {
                     .align(Alignment.BottomStart)
                     .padding(16.dp)
             ) {
-                Text(
-                    text = movie.name,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
+                movie.name?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Filled.Star,

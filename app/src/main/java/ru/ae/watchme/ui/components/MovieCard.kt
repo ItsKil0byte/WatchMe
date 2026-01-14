@@ -51,11 +51,13 @@ fun MovieCard(movie: Movie, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = movie.name, style = MaterialTheme.typography.titleMedium)
-                Text(
-                    text = movie.shortDescription,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                movie.name?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
+                movie.shortDescription?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
                 Spacer(modifier = Modifier.height(80.dp))
                 SuggestionChip(
                     modifier = Modifier.align(Alignment.End),
