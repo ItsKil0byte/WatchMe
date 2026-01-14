@@ -22,8 +22,7 @@ class MovieDetailsViewModel(
         viewModelScope.launch {
             _state.value = MovieDetailsState.Loading
             try {
-                // TODO: Подставить метод с idшкой
-                val movie = repository.getRandomMovie()
+                val movie = repository.getMovieDetails(id)
 
                 // Ставим false пока нет сохранения в БД
                 _state.value = MovieDetailsState.Success(movie, false)
