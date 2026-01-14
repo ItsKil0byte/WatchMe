@@ -22,7 +22,7 @@ fun Navigation() {
                 onMovieClick = { id ->
                     navController.navigate(Screen.MovieDetails(id))
                 },
-                onRandomWheelClick = {
+                onRandomClick = {
                     navController.navigate(Screen.RandomWheel)
                 }
             )

@@ -17,14 +17,14 @@ data class MovieDto(
 fun MovieDto.toDomain(): Movie{
     return Movie(
         id = id,
-        name = name,
-        description = description,
-        shortDescription = shortDescription,
-        year = year,
-        genres = genres?.map { it.genreToString() },
-        posterUrl = poster?.url,
-        previewUrl = poster?.previewUrl,
-        rating = rating?.kp,
-        ageRating = ageRating
+        _name = name,
+        _description = description,
+        _shortDescription = shortDescription,
+        _year = year,
+        _genres = genres?.map { it.genreToString() },
+        _posterUrl = poster?.url,
+        _previewUrl = poster?.previewUrl,
+        _rating = rating?.kp,
+        _ageRating = ageRating
     )
 }
