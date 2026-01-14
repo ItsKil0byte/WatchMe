@@ -1,11 +1,9 @@
 package ru.ae.watchme.data.repository
 
 import ru.ae.watchme.data.local.dao.MovieDao
-import ru.ae.watchme.data.local.model.toMovie
 import ru.ae.watchme.data.remote.dto.toDomain
 import ru.ae.watchme.data.remote.service.MovieService
 import ru.ae.watchme.domain.model.Movie
-import ru.ae.watchme.domain.model.toMovieEntity
 import ru.ae.watchme.domain.repository.MovieRepository
 
 class MovieRepositoryImpl (

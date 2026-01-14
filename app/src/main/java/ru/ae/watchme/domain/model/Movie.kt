@@ -48,19 +48,19 @@ data class Movie(
 
     val ageRating: String
         get() = if (_ageRating != null && _ageRating != 0) "$_ageRating+" else ""
-}
 
-fun Movie.toMovieEntity(): MovieEntity {
-    return MovieEntity(
-        id = id,
-        name = name,
-        description = description,
-        shortDescription = shortDescription,
-        year = year,
-        genres = genres,
-        posterUrl = posterUrl,
-        previewUrl = previewUrl,
-        rating = rating,
-        ageRating = ageRating
-    )
+    fun toMovieEntity(): MovieEntity {
+        return MovieEntity(
+            id = id,
+            name = _name,
+            description = _description,
+            shortDescription = _shortDescription,
+            year = _year,
+            genres = _genres,
+            posterUrl = _posterUrl,
+            previewUrl = _previewUrl,
+            rating = _rating,
+            ageRating = _ageRating
+        )
+    }
 }

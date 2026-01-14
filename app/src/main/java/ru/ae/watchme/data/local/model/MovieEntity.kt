@@ -14,25 +14,27 @@ data class MovieEntity(
     val name: String?,
     val description: String?,
     val shortDescription: String?,
-    val year: String,
-    val genres: String,
+    val year: Int?,
+    val genres: List<String?>?,
     val posterUrl: String?,
     val previewUrl: String?,
-    val rating: String,
-    val ageRating: String
-)
-
-fun MovieEntity.toMovie(): Movie {
-    return Movie(
-        id = id,
-        name = name,
-        description = description,
-        shortDescription = shortDescription,
-        year = year,
-        genres = genres,
-        posterUrl = posterUrl,
-        previewUrl = previewUrl,
-        rating = rating,
-        ageRating = ageRating
-    )
+    val rating: Double?,
+    val ageRating: Int?
+) {
+    fun toMovie(): Movie {
+        return Movie(
+            id = id,
+            _name = name,
+            _description = description,
+            _shortDescription = shortDescription,
+            _year = year,
+            _genres = genres,
+            _posterUrl = posterUrl,
+            _previewUrl = previewUrl,
+            _rating = rating,
+            _ageRating = ageRating
+        )
+    }
 }
+
+
