@@ -7,4 +7,7 @@ interface MovieRepository {
     suspend fun getRandomMovie(): Movie
     suspend fun searchMovie(pageNum: Int, query: String): List<Movie>
     suspend fun getMovieDetails(movieId: Int): Movie
+    suspend fun saveMovie(movie: Movie)
+    suspend fun getAllMoviesFromDb(): List<Movie>
+    suspend fun getMovieByIdFromDb(id: Int): Movie?
 }

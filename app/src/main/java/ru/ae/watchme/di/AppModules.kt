@@ -6,8 +6,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import ru.ae.watchme.BuildConfig
+import ru.ae.watchme.data.local.database.MovieDatabase
 import ru.ae.watchme.data.remote.interceptor.ApiKeyInterceptor
 import ru.ae.watchme.data.remote.service.MovieService
 import ru.ae.watchme.data.repository.MovieRepositoryImpl
@@ -37,21 +37,31 @@ val networkModule = module {
 val repositoryModule = module {
     single<MovieRepository>{
         MovieRepositoryImpl(
+            get(),
             get()
         )
     }
 }
 
 val databaseModule = module {
-    // TODO: Передать класс для базы данных
-    // single { Room.databaseBuilder(get(), TODO(), "WatchMeLocal.db").build() }
-    // single { get<TODO()>() }
+    single {
+        Room.databaseBuilder(
+            get(),
+            MovieDatabase::class.java,
+            "watchme.db"
+        ).build()
+    }
+
+    single {
+        get<MovieDatabase>().movieDao()
+    }
 }
 
 val appModule = module {
-    //TODO() Передать остальные модули, бд и че там еще появится
+    //TODO() Передать остальные модули, если чето еще есть
     includes(
         networkModule,
-        repositoryModule
+        repositoryModule,
+        databaseModule
     )
 }

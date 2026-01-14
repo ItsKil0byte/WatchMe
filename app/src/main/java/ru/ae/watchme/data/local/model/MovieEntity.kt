@@ -1,8 +1,15 @@
-package ru.ae.watchme.domain.model
+package ru.ae.watchme.data.local.model
 
-import ru.ae.watchme.data.local.model.MovieEntity
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import ru.ae.watchme.data.local.converter.GenresConverter
+import ru.ae.watchme.domain.model.Movie
 
-data class Movie(
+@Entity(tableName = "movies")
+@TypeConverters(GenresConverter::class)
+data class MovieEntity(
+    @PrimaryKey(autoGenerate = false)
     val id: Int,
     val name: String?,
     val description: String?,
@@ -15,8 +22,8 @@ data class Movie(
     val ageRating: Int?
 )
 
-fun Movie.toMovieEntity(): MovieEntity {
-    return MovieEntity(
+fun MovieEntity.toMovie(): Movie {
+    return Movie(
         id = id,
         name = name,
         description = description,

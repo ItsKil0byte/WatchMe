@@ -1,12 +1,16 @@
 package ru.ae.watchme.data.repository
 
+import ru.ae.watchme.data.local.dao.MovieDao
+import ru.ae.watchme.data.local.model.toMovie
 import ru.ae.watchme.data.remote.dto.toDomain
 import ru.ae.watchme.data.remote.service.MovieService
 import ru.ae.watchme.domain.model.Movie
+import ru.ae.watchme.domain.model.toMovieEntity
 import ru.ae.watchme.domain.repository.MovieRepository
 
 class MovieRepositoryImpl (
-    private val movieService: MovieService
+    private val movieService: MovieService,
+    private val movieDao: MovieDao
 ) : MovieRepository{
     override suspend fun getMovies(pageNum: Int): List<Movie> {
         return try{
@@ -45,5 +49,17 @@ class MovieRepositoryImpl (
         } catch (e: Exception) {
             throw RuntimeException("Чето не так с получением фильма по айди, поплачь хз", e)
         }
+    }
+
+    override suspend fun saveMovie(movie: Movie) {
+        return movieDao.saveMovie(movie.toMovieEntity())
+    }
+
+    override suspend fun getAllMoviesFromDb(): List<Movie> {
+        return movieDao.getAllMovies().map { it.toMovie() }
+    }
+
+    override suspend fun getMovieByIdFromDb(id: Int): Movie? {
+        return movieDao.getMovieById(id)?.toMovie()
     }
 }
