@@ -1,6 +1,5 @@
 package ru.ae.watchme.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +15,6 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -25,12 +22,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,8 +45,6 @@ fun MovieListContent(
 ) {
 
     // Да, надо было сразу слушать Никиту и делить на три функции, а не на две...
-
-    var isActive by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -105,13 +96,15 @@ fun MovieListContent(
 
             DockedSearchBar(
                 shadowElevation = 4.dp,
+                expanded = false, // Закрыл выпадение в SearchBar, мне лень писать это всё заново
+                onExpandedChange = { },
                 inputField = {
                     SearchBarDefaults.InputField(
                         query = query,
                         onQueryChange = { onSearch(it) },
-                        onSearch = { isActive = false },
-                        expanded = isActive,
-                        onExpandedChange = { isActive = it },
+                        onSearch = { },
+                        expanded = false,
+                        onExpandedChange = { },
                         placeholder = { Text("Найти фильмы...") },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         trailingIcon = {
@@ -123,31 +116,18 @@ fun MovieListContent(
                         }
                     )
                 },
-                expanded = isActive,
-                onExpandedChange = { isActive = it },
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth(0.9f)
                     .padding(top = 8.dp)
             ) {
-                if (state is MovieListState.Success) {
-                    val suggestion = state.movies.take(5)
-
-                    suggestion.forEach {
-                        ListItem(
-                            headlineContent = { it.name?.let { text -> Text(text) } },
-                            modifier = Modifier.clickable {
-                                it.name?.let { text -> onSearch(text) }
-                                isActive = false
-                            },
-                            colors = ListItemDefaults.colors(
-                                containerColor = Color.Transparent
-                            )
-                        )
-                    }
-                }
+                /*
+                * Решил избавиться от выпадающего контейнера в списке. В текущей реализации он
+                * простро мешался, перекрывал фильмы, а ListItem не давал достаточной информации.
+                * Чтобы не запариваться с переделкой - просто убрал всё что связано с expanded.
+                * Да, помоему не очень то и правильно, но, ресурс сейчас ограничен, так что не бейте.
+                */
             }
-
         }
     }
 }
