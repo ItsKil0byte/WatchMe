@@ -60,4 +60,8 @@ class MovieRepositoryImpl (
     override suspend fun getMovieByIdFromDb(id: Int): Movie? {
         return movieDao.getMovieById(id)?.toMovie()
     }
+
+    override suspend fun deleteMovieById(id: Int) {
+        return movieDao.deleteMovieById(id)
+    }
 }
