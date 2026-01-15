@@ -21,14 +21,19 @@ class MovieDetailsViewModel(
     fun loadDetails() {
         viewModelScope.launch {
             _state.value = MovieDetailsState.Loading
-            try {
-                val movie = repository.getMovieDetails(id)
 
-                // Ставим false пока нет сохранения в БД
-                _state.value = MovieDetailsState.Success(movie, false)
-            } catch (e: Exception) {
-                _state.value =
-                    MovieDetailsState.Error(e.message ?: "Ой ой ой, что-то совсем плохое...")
+            val local = repository.getMovieByIdFromDb(id)
+
+            if (local != null) {
+                _state.value = MovieDetailsState.Success(movie = local, isFavourite = true)
+            } else {
+                try {
+                    val remote = repository.getMovieDetails(id)
+                    _state.value = MovieDetailsState.Success(movie = remote, isFavourite = false)
+                } catch (e: Exception) {
+                    _state.value =
+                        MovieDetailsState.Error(e.message ?: "Ой ой ой, что-то совсем плохое...")
+                }
             }
         }
     }
@@ -37,11 +42,15 @@ class MovieDetailsViewModel(
         val currentState = _state.value
 
         if (currentState is MovieDetailsState.Success) {
-            val status = !currentState.isFavourite
+            viewModelScope.launch {
+                if (currentState.isFavourite) {
+                    repository.deleteMovieById(currentState.movie.id)
+                } else {
+                    repository.saveMovie(currentState.movie)
+                }
+            }
 
-            _state.value = currentState.copy(isFavourite = status)
-
-            // TODO: Сохранить это в локальное БД
+            _state.value = currentState.copy(isFavourite = !currentState.isFavourite)
         }
     }
 }

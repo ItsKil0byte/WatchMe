@@ -42,9 +42,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import ru.ae.watchme.R
 import ru.ae.watchme.ui.components.BigMovieCard
 import ru.ae.watchme.ui.viewmodels.RandomMovieState
 import ru.ae.watchme.ui.viewmodels.RandomMovieViewModel
@@ -87,99 +89,126 @@ fun RandomMovieContent(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(450.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                // Фейковые карточки
-                repeat(5) { index ->
-                    Card(
-                        modifier = Modifier
-                            .size(250.dp, 390.dp)
-                            .graphicsLayer {
-                                rotationZ = (index - 0.5f) * 4f
-                                translationX =
-                                    if (state is RandomMovieState.Shuffling) offset * (index + 1) else 0f
-                            },
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = (index * 2).dp)
-                    ) {}
+            when (state) {
+                is RandomMovieState.Empty -> {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            painterResource(R.drawable.heart_broken_24),
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = Color.Gray
+                        )
+
+                        Spacer(Modifier.height(16.dp))
+
+                        Text(
+                            text = "В избранном пусто :(",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "Лайкайте фильмы, чтобы рандом заработал!",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
 
-                AnimatedContent(
-                    targetState = state,
-                    transitionSpec = {
-                        (fadeIn(animationSpec = tween(400)) + scaleIn(initialScale = 0.8f))
-                            .togetherWith(fadeOut(animationSpec = tween(200)) + scaleOut())
-                    }
-                ) { currentState ->
-                    when (currentState) {
-                        is RandomMovieState.Idle, is RandomMovieState.Shuffling -> {
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(450.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Фейковые карточки
+                        repeat(5) { index ->
                             Card(
-                                modifier = Modifier.size(240.dp, 380.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-                            ) {
-                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Icon(
-                                            Icons.Default.PlayArrow,
-                                            null,
-                                            Modifier.size(100.dp),
-                                            tint = Color.White
-                                        )
-                                        Spacer(Modifier.height(16.dp))
-                                        Text(
-                                            text = if (currentState is RandomMovieState.Shuffling) "Выбираем..." else "Удиви меня!",
-                                            color = Color.White,
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
+                                modifier = Modifier
+                                    .size(250.dp, 390.dp)
+                                    .graphicsLayer {
+                                        rotationZ = (index - 0.5f) * 4f
+                                        translationX =
+                                            if (state is RandomMovieState.Shuffling) offset * (index + 1) else 0f
+                                    },
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = (index * 2).dp)
+                            ) {}
+                        }
+
+                        AnimatedContent(
+                            targetState = state,
+                            transitionSpec = {
+                                (fadeIn(animationSpec = tween(400)) + scaleIn(initialScale = 0.8f))
+                                    .togetherWith(fadeOut(animationSpec = tween(200)) + scaleOut())
+                            }
+                        ) { currentState ->
+                            when (currentState) {
+                                is RandomMovieState.Idle, is RandomMovieState.Shuffling -> {
+                                    Card(
+                                        modifier = Modifier.size(240.dp, 380.dp),
+                                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                                    ) {
+                                        Box(
+                                            Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                Icon(
+                                                    Icons.Default.PlayArrow,
+                                                    null,
+                                                    Modifier.size(100.dp),
+                                                    tint = Color.White
+                                                )
+                                                Spacer(Modifier.height(16.dp))
+                                                Text(
+                                                    text = if (currentState is RandomMovieState.Shuffling) "Выбираем..." else "Удиви меня!",
+                                                    color = Color.White,
+                                                    style = MaterialTheme.typography.titleMedium
+                                                )
+                                            }
+                                        }
                                     }
+                                }
+
+                                is RandomMovieState.Success -> {
+                                    BigMovieCard(
+                                        movie = currentState.movie,
+                                        onClick = { onMovieClick(currentState.movie.id) }
+                                    )
+                                }
+
+                                else -> {
+                                    /* Да не  может быть такого */
                                 }
                             }
                         }
+                    }
+                    Spacer(Modifier.height(52.dp))
 
-                        is RandomMovieState.Success -> {
-                            BigMovieCard(
-                                movie = currentState.movie,
-                                onClick = { onMovieClick(currentState.movie.id) }
+                    Button(
+                        onClick = onShuffleClick,
+                        enabled = state !is RandomMovieState.Shuffling,
+                        modifier = Modifier
+                            .height(52.dp)
+                            .fillMaxWidth(0.5f)
+                    ) {
+                        if (state is RandomMovieState.Shuffling) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
                             )
-                        }
-
-                        is RandomMovieState.Empty -> {
-                            Text(
-                                "Ничего не нашли :(",
-                                style = MaterialTheme.typography.headlineSmall
-                            )
+                        } else {
+                            Text("Удиви меня!")
                         }
                     }
-                }
-            }
-            Spacer(Modifier.height(52.dp))
-
-            Button(
-                onClick = onShuffleClick,
-                enabled = state !is RandomMovieState.Shuffling,
-                modifier = Modifier
-                    .height(52.dp)
-                    .fillMaxWidth(0.5f)
-            ) {
-                if (state is RandomMovieState.Shuffling) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text("Выбрать фильм")
                 }
             }
         }
     }
 }
+
 
 @Preview
 @Composable

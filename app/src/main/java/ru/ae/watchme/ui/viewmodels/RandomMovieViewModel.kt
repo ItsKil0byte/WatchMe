@@ -20,12 +20,10 @@ class RandomMovieViewModel(private val repository: MovieRepository) : ViewModel(
             delay(1000)
 
             try {
-                // TODO: Брать фильмы из избранного
+                val favorites = repository.getAllMoviesFromDb()
 
-                val movies = repository.getMovies(1)
-
-                if (movies.isNotEmpty()) {
-                    _state.value = RandomMovieState.Success(movies.random())
+                if (favorites.isNotEmpty()) {
+                    _state.value = RandomMovieState.Success(favorites.random())
                 } else {
                     _state.value = RandomMovieState.Empty
                 }
