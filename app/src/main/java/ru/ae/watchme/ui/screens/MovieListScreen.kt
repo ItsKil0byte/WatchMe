@@ -7,14 +7,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -24,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +44,10 @@ import ru.ae.watchme.ui.viewmodels.MovieListViewModel
 fun MovieListContent(
     state: MovieListState,
     query: String,
+    isFavoriteMode: Boolean,
     onSearch: (String) -> Unit,
+    onLoad: () -> Unit,
+    onToggleFavorite: () -> Unit,
     onMovieClick: (Int) -> Unit,
     onRandomClick: () -> Unit
 ) {
@@ -51,6 +59,21 @@ fun MovieListContent(
             TopAppBar(
                 title = { Text("Watch Me!") },
                 actions = {
+                    IconButton(onClick =  onToggleFavorite) {
+                        Icon(
+                            imageVector = if (isFavoriteMode) {
+                                Icons.Filled.Favorite
+                            } else {
+                                Icons.Filled.FavoriteBorder
+                            },
+                            contentDescription = null,
+                            tint = if (isFavoriteMode) {
+                                Color.Red
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                    }
                     IconButton(onClick = onRandomClick) {
                         Icon(
                             painter = painterResource(R.drawable.casino_24),
@@ -87,8 +110,12 @@ fun MovieListContent(
                             end = 8.dp
                         )
                     ) {
-                        items(state.movies) {
-                            MovieCard(movie = it, onClick = { onMovieClick(it.id) })
+                        itemsIndexed(state.movies) { index, movie ->
+                            MovieCard(movie = movie, onClick = { onMovieClick(movie.id)})
+
+                            if (index >= state.movies.size - 1) {
+                                onLoad()
+                            }
                         }
                     }
                 }
@@ -201,8 +228,11 @@ fun MovieListScreenPreview() {
     MovieListContent(
         state = MovieListState.Success(previewMovies),
         query = "",
+        isFavoriteMode = false,
         onSearch = {},
+        onLoad = {},
         onMovieClick = {},
+        onToggleFavorite = {},
         onRandomClick = {}
     )
 }
@@ -215,12 +245,16 @@ fun MovieListScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val query by viewModel.query.collectAsState()
+    val isFavoriteMode by viewModel.isFavoriteMode.collectAsState()
 
     MovieListContent(
         state = state,
         query = query,
+        isFavoriteMode = isFavoriteMode,
         onSearch = { viewModel.search(it) },
+        onLoad = { viewModel.loadNext() },
         onMovieClick = onMovieClick,
+        onToggleFavorite = { viewModel.toggleFavoritesMode() },
         onRandomClick = onRandomClick
     )
 }
