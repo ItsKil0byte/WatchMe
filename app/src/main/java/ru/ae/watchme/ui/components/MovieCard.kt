@@ -56,12 +56,6 @@ fun MovieCard(movie: Movie, onClick: () -> Unit) {
                     text = movie.shortDescription,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                Spacer(modifier = Modifier.height(80.dp))
-                SuggestionChip(
-                    modifier = Modifier.align(Alignment.End),
-                    onClick = { /* TODO: Закешировать */ },
-                    label = { Text(text = "В избранное") }
-                )
             }
         }
     }
